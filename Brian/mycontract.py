@@ -1,4 +1,4 @@
-from thirdweb import ThirdWebSDK
+from thirdweb import ThirdwebSDK
 from eth_account import Account
 from dotenv import load_dotenv
 from web3 import Web3
