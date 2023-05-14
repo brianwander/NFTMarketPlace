@@ -1,5 +1,6 @@
 import streamlit as st
 from thirdweb import ThirdwebSDK
+from thirdweb.types.nft import NFTMetadataInput
 from dotenv import load_dotenv
 import os
 from functions import mint_nft
@@ -11,13 +12,7 @@ with tab1:
     st.title("NFT Marketplace")#Title
     st.header("Mint NFTs from your original artwork, and buy and sell them on the Ethereum Blockchain")#Explanation of the application
     st.write("First, input the contract address below. Then, head over to the Mint tab to upload your work, or the Trade screen to buy and sell NFTs")#How to use the application
-    contract_address=st.text_input("NFT Contract address")
-    if st.button("Load Contract"):
-        load_dotenv()
-        private_key=os.getenv("mumbai_private_key")
-        sdk= ThirdwebSDK.from_private_key(private_key,"mumbai")
-        contract = sdk.get_nft_collection(str(contract_address))
-        st.write(contract)
+    contract_address=st.sidebar.text_input("NFT Contract address")
 
 
 #In the Mint tab:
@@ -34,13 +29,40 @@ with tab2:
         private_key=os.getenv("mumbai_private_key")
         sdk= ThirdwebSDK.from_private_key(private_key,"mumbai")
         contract = sdk.get_nft_collection(str(contract_address))
-        mint_nft(contract_object=contract,name=nft_name,description=nft_description,image=artwork,address=address)
+        receipt,token_id,nft=mint_nft(contract_object=contract,name=nft_name,description=nft_description,image=artwork,address=address)
+        st.write("Receipt",receipt)
+        st.write("Token ID",token_id)
+        st.write("NFT",nft)
 #contract.call("function_name", "arg1", "arg2") #Pseudocode for functions
 #contract.call("mintto",artwork) #Pseudocode for minting
 
 #In the Browse tab:
 with tab3:
-    st.text_input("Artwork address") #User input of the artwork address
+    if st.button("Load my Balance"):
+        load_dotenv()
+        private_key=os.getenv("mumbai_private_key")
+        sdk= ThirdwebSDK.from_private_key(private_key,"mumbai")
+        contract=sdk.get_nft_collection(str(contract_address))
+        st.write(contract.balance())
+    st.write("Show another address' balance")
+    view_balance_address=st.text_input("Wallet address to view NFT balance")
+    if st.button("Load wallet's balance"):
+        load_dotenv()
+        private_key=os.getenv("mumbai_private_key")
+        sdk= ThirdwebSDK.from_private_key(private_key,"mumbai")
+        contract=sdk.get_nft_collection(str(contract_address))
+        st.write(contract.balance_of(view_balance_address))
+    token_id=st.text_input("NFT ID to view") #User input of the artwork address
+    if st.button("View NFT"):
+        load_dotenv()
+        private_key=os.getenv("mumbai_private_key")
+        sdk=ThirdwebSDK.from_private_key(private_key,"mumbai")
+        contract=sdk.get_nft_collection(str(contract_address))
+        output=contract.get(token_id)
+        st.write("Name:",output.metadata.name)
+        st.image(output.metadata.image)
+        st.write("Description:",output.metadata.description)
+        st.write("Owner:",output.owner)
     #Allow users view artwork
     st.text_input("Wallet address")
     #Allow users to view held NFTs and transactions associated with a given address.
