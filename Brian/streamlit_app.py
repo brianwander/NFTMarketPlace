@@ -23,7 +23,7 @@ with tab2:
         st.image(artwork)
     address=st.text_input("Address to which the NFT will be minted") #The address that will own the NFT
     nft_name=st.text_input("Give a name to your NFT")
-    nft_description=st.text_input("Give a description to your NFT")
+    nft_description=st.text_input("Price your NFT in MATIC")
     if st.button("Mint NFT"):
         load_dotenv()
         private_key=os.getenv("mumbai_private_key")
@@ -61,19 +61,31 @@ with tab3:
         output=contract.get(token_id)
         st.write("Name:",output.metadata.name)
         st.image(output.metadata.image)
-        st.write("Description:",output.metadata.description)
+        st.write("Price in MATIC:",output.metadata.description)
         st.write("Owner:",output.owner)
 
 #In the Trade tab:
 with tab4:
     receiver_address=st.text_input("Wallet address to receive an NFT")
     token_id=st.text_input("Token ID")
+    if st.button("Preview NFT"):
+        load_dotenv()
+        private_key=os.getenv("mumbai_private_key")
+        sdk=ThirdwebSDK.from_private_key(private_key,"mumbai")
+        contract=sdk.get_nft_collection(str(contract_address))
+        output=contract.get(token_id)
+        st.write("Name:",output.metadata.name)
+        st.image(output.metadata.image)
+        st.write("Price in MATIC:",output.metadata.description)
+        st.write("Current owner",output.owner)
+    st.write("Transfer an NFT after you have received sufficient MATIC")
     if st.button("Transfer NFT"):
         load_dotenv()
         private_key=os.getenv("mumbai_private_key")
         sdk=ThirdwebSDK.from_private_key(private_key,"mumbai")
         contract=sdk.get_nft_collection(contract_address)
         st.write(contract.transfer(receiver_address,token_id))
+    
     #listing_number=st.text_input("Listing ID")
     #receiver=st.text_input("Receiver for the NFT")
     #if st.button("Buy NFT"):
