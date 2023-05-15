@@ -12,7 +12,7 @@ with tab1:
     st.title("NFT Marketplace")#Title
     st.header("Mint NFTs from your original artwork, and buy and sell them on the Ethereum Blockchain")#Explanation of the application
     st.write("First, input the contract address below. Then, head over to the Mint tab to upload your work, or the Trade screen to buy and sell NFTs")#How to use the application
-    contract_address=st.sidebar.text_input("NFT Contract address")
+    contract_address=st.sidebar.text_input("NFT collection contract address")
 
 
 #In the Mint tab:
@@ -53,7 +53,7 @@ with tab3:
         contract=sdk.get_nft_collection(str(contract_address))
         st.write(contract.balance_of(view_balance_address))
     token_id=st.text_input("NFT ID to view") #User input of the artwork address
-    if st.button("View NFT"):
+    if st.button("View NFT"):#Allow users view artwork given the token ID
         load_dotenv()
         private_key=os.getenv("mumbai_private_key")
         sdk=ThirdwebSDK.from_private_key(private_key,"mumbai")
@@ -63,15 +63,26 @@ with tab3:
         st.image(output.metadata.image)
         st.write("Description:",output.metadata.description)
         st.write("Owner:",output.owner)
-    #Allow users view artwork
-    st.text_input("Wallet address")
-    #Allow users to view held NFTs and transactions associated with a given address.
-    st.write("Blockchain history")
-    #Allows users to view the history of transactions on the blockchain.
 
 #In the Trade tab:
 with tab4:
-    recipient_address=st.text_input("Recipient Address") #The address of the recipient of the transaction
-    sender_address=st.text_input("Your Address") #Transaction sender
-    nft_address=st.text_input("NFT Address") #NFT to transact
-    #contract.call("TransactionMethod")
+    receiver_address=st.text_input("Wallet address to receive an NFT")
+    token_id=st.text_input("Token ID")
+    if st.button("Transfer NFT"):
+        load_dotenv()
+        private_key=os.getenv("mumbai_private_key")
+        sdk=ThirdwebSDK.from_private_key(private_key,"mumbai")
+        contract=sdk.get_nft_collection(contract_address)
+        st.write(contract.transfer(receiver_address,token_id))
+    #listing_number=st.text_input("Listing ID")
+    #receiver=st.text_input("Receiver for the NFT")
+    #if st.button("Buy NFT"):
+    #    load_dotenv()
+    #    private_key=os.getenv("mumbai_private_key")
+    #    sdk=ThirdwebSDK.from_private_key(private_key,"mumbai")
+    #    contract=sdk.get_marketplace(marketplace_contract_address)
+    #    st.write(contract.buyout_listing(listing_id=listing_number,quantity_desired=1,receiver=receiver))
+    #recipient_address=st.text_input("Recipient Address") #The address of the recipient of the transaction
+    #sender_address=st.text_input("Your Address") #Transaction sender
+    #nft_address=st.text_input("NFT Address") #NFT to transact
+    #st.write("Buy")
