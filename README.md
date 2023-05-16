@@ -51,6 +51,6 @@ The trade tab allows users to transfer NFTs from the connected wallet to any oth
 Apache License
 
 ## Contributors
-By Brian Wander
-Email brianwander101@gmail.com
+By Brian Wander <br>
+Email brianwander101@gmail.com <br>
 Linkedin https://www.linkedin.com/in/brian-wander-514326258/
